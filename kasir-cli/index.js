@@ -11,6 +11,7 @@ class Produk {
   }
 
   info() {
+    // Template untuk daftar katalog produk agar rapi di dashboard
     return `<span>${this.kode} - ${this.nama}</span> <span>Rp${this.harga.toLocaleString()}</span>`;
   }
 }
@@ -28,6 +29,7 @@ class Transaksi extends Produk {
 
 class Kasir {
   constructor() {
+    // Daftar produk default
     this.produkList = [
       new Produk("P001", "Indomie", 4000),
       new Produk("P002", "Teh Botol", 5000),
@@ -46,6 +48,7 @@ class Kasir {
   }
 
   tambahTransaksi(kode, qty) {
+    // Menghapus spasi dan case-insensitive agar input lebih fleksibel
     const inputKode = kode.trim().toLowerCase();
     const produk = this.produkList.find(
       (p) => p.kode.toLowerCase() === inputKode,
@@ -67,9 +70,11 @@ class Kasir {
   }
 }
 
+// Inisialisasi Objek Kasir
 const kasir = new Kasir();
 kasir.tampilProduk();
 
+// Fungsi untuk tombol "+ Tambah ke Keranjang"
 function tambahItem() {
   const kodeInput = document.getElementById("kode");
   const qtyInput = document.getElementById("qty");
@@ -85,13 +90,17 @@ function tambahItem() {
   const berhasil = kasir.tambahTransaksi(kode, qty);
 
   if (berhasil) {
+    // Otomatis memperbarui tampilan di sisi kanan
     updateTampilanStruk();
+
+    // Reset form dan fokus kembali ke input kode
     kodeInput.value = "";
     qtyInput.value = "1";
     kodeInput.focus();
   }
 }
 
+// Fungsi utama untuk merender daftar belanja ke panel kanan (Struk)
 function updateTampilanStruk() {
   const strukBox = document.getElementById("struk-output");
   const isiStruk = document.getElementById("isi-struk");
@@ -104,11 +113,12 @@ function updateTampilanStruk() {
     return;
   }
 
-  // Menampilkan kotak struk jika sebelumnya tersembunyi
+  // Paksa struk muncul jika ada isinya
   if (strukBox) {
     strukBox.style.display = "block";
   }
 
+  // Render semua item yang ada di array keranjang
   isiStruk.innerHTML = kasir.keranjang
     .map(
       (item) => `
@@ -123,7 +133,7 @@ function updateTampilanStruk() {
   totalBayar.innerText = `Rp ${kasir.hitungTotal().toLocaleString()}`;
 }
 
-// Tombol Pratinjau sekarang memaksa tampilan struk muncul
+// Tombol Pratinjau untuk memastikan tampilan segar
 function tampilkanStruk() {
   if (kasir.keranjang.length === 0) {
     alert("Keranjang masih kosong!");
@@ -133,12 +143,21 @@ function tampilkanStruk() {
   alert("Pratinjau struk telah diperbarui!");
 }
 
+// Fungsi Selesaikan Transaksi dengan alur konfirmasi
 function resetKasir() {
   if (kasir.keranjang.length === 0) return;
 
-  if (confirm("Apakah Anda ingin menyelesaikan transaksi ini?")) {
+  const totalAkhir = kasir.hitungTotal().toLocaleString();
+  const konfirmasi = confirm(
+    `Total Belanja: Rp ${totalAkhir}\n\nSelesaikan transaksi dan reset keranjang?`,
+  );
+
+  if (konfirmasi) {
+    alert(`✅ Transaksi Berhasil!\nTotal Rp ${totalAkhir} telah dicatat.`);
+
+    // Bersihkan data setelah konfirmasi
     kasir.keranjang = [];
     updateTampilanStruk();
-    alert("✅ Transaksi Berhasil Diselesaikan!");
+    document.getElementById("kode").focus();
   }
 }
