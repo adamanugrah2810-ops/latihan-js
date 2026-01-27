@@ -41,7 +41,7 @@ class Kasir {
   tambahTransaksi(kode, qty) {
     const produk = this.produkList.find((p) => p.kode === kode);
     if (!produk) {
-      console.log("❌ Produk tidak ditemukan!");
+      console.log("❌ Produk tidak ditemukan");
       return;
     }
 
