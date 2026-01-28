@@ -10,9 +10,15 @@ class Produk {
     this.harga = harga;
   }
 
-  info() {
-    // Template untuk daftar katalog produk agar rapi di dashboard
-    return `<span>${this.kode} - ${this.nama}</span> <span>Rp${this.harga.toLocaleString()}</span>`;
+  // Merender tampilan kartu mewah di katalog
+  renderCard() {
+    return `
+      <div class="product-card" onclick="isiKodeOtomatis('${this.kode}')">
+        <span class="p-code">${this.kode}</span>
+        <span class="p-name">${this.nama}</span>
+        <span class="p-price">Rp ${this.harga.toLocaleString("id-ID")}</span>
+      </div>
+    `;
   }
 }
 
@@ -29,30 +35,32 @@ class Transaksi extends Produk {
 
 class Kasir {
   constructor() {
-    // Daftar produk default
     this.produkList = [
       new Produk("P001", "Indomie", 4000),
       new Produk("P002", "Teh Botol", 5000),
       new Produk("P003", "Roti", 4000),
+      new Produk("P004", "Air Mineral", 3000),
+      new Produk("P005", "Kopi Sachet", 2500),
+      new Produk("P006", "Susu Kotak", 6000),
+      new Produk("P007", "Biskuit", 7000),
+      new Produk("P008", "Chitato", 9000),
+      new Produk("P009", "Coklat", 8000),
+      new Produk("P010", "Permen", 2000),
     ];
     this.keranjang = [];
   }
 
+  // Menampilkan katalog dalam bentuk GRID CARDS
   tampilProduk() {
     const listEl = document.getElementById("daftar-produk");
     if (listEl) {
-      listEl.innerHTML = this.produkList
-        .map((p) => `<li>${p.info()}</li>`)
-        .join("");
+      listEl.innerHTML = this.produkList.map((p) => p.renderCard()).join("");
     }
   }
 
   tambahTransaksi(kode, qty) {
-    // Menghapus spasi dan case-insensitive agar input lebih fleksibel
-    const inputKode = kode.trim().toLowerCase();
-    const produk = this.produkList.find(
-      (p) => p.kode.toLowerCase() === inputKode,
-    );
+    const inputKode = kode.trim().toUpperCase();
+    const produk = this.produkList.find((p) => p.kode === inputKode);
 
     if (!produk) {
       alert(`❌ Produk dengan kode "${kode}" tidak ditemukan!`);
@@ -74,7 +82,13 @@ class Kasir {
 const kasir = new Kasir();
 kasir.tampilProduk();
 
-// Fungsi untuk tombol "+ Tambah ke Keranjang"
+// Fungsi bantuan untuk klik kartu produk
+function isiKodeOtomatis(kode) {
+  document.getElementById("kode").value = kode;
+  document.getElementById("qty").focus();
+}
+
+// Tombol: TAMBAH ITEM
 function tambahItem() {
   const kodeInput = document.getElementById("kode");
   const qtyInput = document.getElementById("qty");
@@ -83,81 +97,69 @@ function tambahItem() {
   const qty = parseInt(qtyInput.value);
 
   if (kode === "" || isNaN(qty) || qty <= 0) {
-    alert("Mohon isi kode produk dan jumlah (qty) yang valid!");
+    alert("Mohon isi kode produk dan jumlah yang valid!");
     return;
   }
 
-  const berhasil = kasir.tambahTransaksi(kode, qty);
-
-  if (berhasil) {
-    // Otomatis memperbarui tampilan di sisi kanan
+  if (kasir.tambahTransaksi(kode, qty)) {
     updateTampilanStruk();
-
-    // Reset form dan fokus kembali ke input kode
-    kodeInput.value = "";
-    qtyInput.value = "1";
+    resetInput();
     kodeInput.focus();
   }
 }
 
-// Fungsi utama untuk merender daftar belanja ke panel kanan (Struk)
+// Tombol: RESET (Hanya input)
+function resetInput() {
+  document.getElementById("kode").value = "";
+  document.getElementById("qty").value = "1";
+}
+
+// Update Panel Kanan (Ringkasan Belanja)
 function updateTampilanStruk() {
-  const strukBox = document.getElementById("struk-output");
   const isiStruk = document.getElementById("isi-struk");
   const totalBayar = document.getElementById("total-bayar");
 
   if (kasir.keranjang.length === 0) {
-    isiStruk.innerHTML = `<p style="color: #94a3b8; text-align: center; border: none; width: 100%;">Belum ada item ditambahkan</p>`;
+    isiStruk.innerHTML = `
+      <div style="text-align: center; color: var(--text-dim); margin-top: 50px">
+        <i data-lucide="archive" size="48" style="opacity: 0.2; margin-bottom: 10px"></i>
+        <p>Belum ada item ditambahkan</p>
+      </div>
+    `;
     totalBayar.innerText = "Rp 0";
-    if (strukBox) strukBox.style.display = "none";
+    if (window.lucide) lucide.createIcons();
     return;
   }
 
-  // Paksa struk muncul jika ada isinya
-  if (strukBox) {
-    strukBox.style.display = "block";
-  }
-
-  // Render semua item yang ada di array keranjang
   isiStruk.innerHTML = kasir.keranjang
     .map(
       (item) => `
-      <div style="display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.05);">
-        <span><strong>${item.nama}</strong> <small>(x${item.qty})</small></span>
-        <span>Rp${item.total().toLocaleString()}</span>
+      <div class="cart-item">
+        <span>${item.nama} <small>(x${item.qty})</small></span>
+        <strong>Rp ${item.total().toLocaleString("id-ID")}</strong>
       </div>
     `,
     )
     .join("");
 
-  totalBayar.innerText = `Rp ${kasir.hitungTotal().toLocaleString()}`;
+  totalBayar.innerText = `Rp ${kasir.hitungTotal().toLocaleString("id-ID")}`;
 }
 
-// Tombol Pratinjau untuk memastikan tampilan segar
-function tampilkanStruk() {
+// Tombol: SELESAIKAN TRANSAKSI
+function selesaikanTransaksi() {
   if (kasir.keranjang.length === 0) {
     alert("Keranjang masih kosong!");
     return;
   }
-  updateTampilanStruk();
-  alert("Pratinjau struk telah diperbarui!");
-}
 
-// Fungsi Selesaikan Transaksi dengan alur konfirmasi
-function resetKasir() {
-  if (kasir.keranjang.length === 0) return;
-
-  const totalAkhir = kasir.hitungTotal().toLocaleString();
-  const konfirmasi = confirm(
-    `Total Belanja: Rp ${totalAkhir}\n\nSelesaikan transaksi dan reset keranjang?`,
-  );
-
-  if (konfirmasi) {
-    alert(`✅ Transaksi Berhasil!\nTotal Rp ${totalAkhir} telah dicatat.`);
-
-    // Bersihkan data setelah konfirmasi
+  const totalAkhir = kasir.hitungTotal().toLocaleString("id-ID");
+  if (confirm(`Total Belanja: Rp ${totalAkhir}\nSelesaikan transaksi?`)) {
+    alert(`✅ Berhasil! Total Rp ${totalAkhir} dicatat.`);
     kasir.keranjang = [];
     updateTampilanStruk();
-    document.getElementById("kode").focus();
+    resetInput();
   }
 }
+
+// Sinkronisasi dengan tombol di HTML (jika Anda menggunakan nama fungsi resetKasir di HTML)
+const resetKasir = selesaikanTransaksi;

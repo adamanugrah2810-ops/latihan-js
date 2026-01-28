@@ -3,250 +3,254 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Modern Dashboard POS - Adam Anugrah</title>
+    <title>NexGen POS — Adam Anugrah</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
       :root {
         --primary: #6366f1;
-        --primary-light: #818cf8;
-        --success: #10b981;
-        --danger: #f43f5e;
-        --bg: #0f172a; /* Dark Elegant Background */
-        --card-bg: rgba(30, 41, 59, 0.7);
-        --text-main: #f8fafc;
-        --text-muted: #94a3b8;
-        --glass: rgba(255, 255, 255, 0.03);
-        --border: rgba(255, 255, 255, 0.1);
+        --primary-glow: rgba(99, 102, 241, 0.4);
+        --accent: #10b981;
+        --danger: #ef4444;
+        --bg: #020617;
+        --card: rgba(30, 41, 59, 0.5);
+        --border: rgba(255, 255, 255, 0.08);
+        --text-pure: #ffffff;
+        --text-dim: #94a3b8;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
       }
 
       body {
         font-family: "Plus Jakarta Sans", sans-serif;
-        background-color: var(--bg);
-        background-image:
-          radial-gradient(
-            circle at 0% 0%,
-            rgba(99, 102, 241, 0.15) 0%,
-            transparent 40%
-          ),
-          radial-gradient(
-            circle at 100% 100%,
-            rgba(16, 185, 129, 0.1) 0%,
-            transparent 40%
-          );
-        color: var(--text-main);
-        margin: 0;
+        background: var(--bg);
+        color: var(--text-pure);
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 100vh;
-        overflow: hidden;
+        background-image:
+          radial-gradient(
+            at 0% 0%,
+            rgba(99, 102, 241, 0.15) 0px,
+            transparent 50%
+          ),
+          radial-gradient(
+            at 100% 100%,
+            rgba(16, 185, 129, 0.1) 0px,
+            transparent 50%
+          );
       }
 
-      .dashboard {
+      .app-container {
         display: flex;
-        width: 90%;
-        max-width: 1100px;
-        height: 85vh;
-        background: var(--card-bg);
-        backdrop-filter: blur(12px);
-        border-radius: 32px;
+        width: 95%;
+        max-width: 1200px;
+        height: 90vh;
+        background: var(--card);
+        backdrop-filter: blur(25px);
         border: 1px solid var(--border);
+        border-radius: 32px;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         overflow: hidden;
       }
 
-      /* PANEL KIRI: INPUT & KATALOG */
-      .panel-left {
-        flex: 1.2;
+      /* --- LEFT PANEL --- */
+      .main-panel {
+        flex: 1.3;
         padding: 40px;
+        display: flex;
+        flex-direction: column;
         border-right: 1px solid var(--border);
-        display: flex;
-        flex-direction: column;
       }
 
-      /* PANEL KANAN: STRUK */
-      .panel-right {
-        flex: 0.8;
-        padding: 40px;
-        background: rgba(15, 23, 42, 0.4);
-        display: flex;
-        flex-direction: column;
-      }
-
-      h2 {
-        font-size: 24px;
-        font-weight: 700;
-        margin: 0 0 10px 0;
-        background: linear-gradient(to right, #818cf8, #34d399);
+      header h1 {
+        font-size: 28px;
+        background: linear-gradient(to right, #fff, #94a3b8);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        margin-bottom: 6px;
       }
 
-      .subtitle {
-        color: var(--text-muted);
-        font-size: 14px;
+      .badge-user {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: rgba(99, 102, 241, 0.1);
+        padding: 6px 14px;
+        border-radius: 100px;
+        font-size: 13px;
+        color: var(--primary);
         margin-bottom: 30px;
       }
 
-      .katalog-grid {
-        background: var(--glass);
-        padding: 20px;
-        border-radius: 20px;
-        border: 1px solid var(--border);
-        margin-bottom: 30px;
-      }
-
-      .katalog-grid strong {
-        color: var(--primary-light);
-        font-size: 12px;
+      .section-label {
+        font-size: 11px;
         text-transform: uppercase;
-        letter-spacing: 1px;
-      }
-
-      ul#daftar-produk {
-        padding: 10px 0 0 0;
-        margin: 0;
-        list-style: none;
-      }
-      ul#daftar-produk li {
-        font-size: 14px;
-        padding: 8px 0;
-        border-bottom: 1px solid var(--border);
+        letter-spacing: 1.5px;
+        color: var(--text-dim);
+        margin-bottom: 16px;
         display: flex;
-        justify-content: space-between;
+        align-items: center;
+        gap: 8px;
       }
 
-      .input-section {
-        margin-top: auto;
+      /* --- KATALOG GRID MEWAH --- */
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        overflow-y: auto;
+        padding-right: 10px;
+        flex-grow: 1;
       }
 
-      .form-row {
-        display: flex;
-        gap: 15px;
-        margin-bottom: 20px;
-      }
-      .input-group {
-        flex: 1;
-      }
-      label {
-        display: block;
-        font-size: 12px;
-        margin-bottom: 8px;
-        color: var(--text-muted);
-      }
-
-      input {
-        width: 100%;
-        background: rgba(0, 0, 0, 0.2);
+      .product-card {
+        background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--border);
-        padding: 12px 15px;
-        border-radius: 12px;
-        color: white;
-        font-family: inherit;
-        transition: 0.3s;
-        box-sizing: border-box;
+        border-radius: 20px;
+        padding: 20px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
       }
 
-      input:focus {
+      .product-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary);
+        box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+      }
+
+      .p-code {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--primary);
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      .p-name {
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 12px;
+        display: block;
+      }
+      .p-price {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      /* --- INPUT AREA --- */
+      .input-section {
+        margin-top: 30px;
+      }
+      .input-wrapper {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 16px;
+      }
+      .input-field {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid var(--border);
+        padding: 14px 18px;
+        border-radius: 14px;
+        color: white;
+        transition: 0.3s;
+      }
+      .input-field:focus {
         outline: none;
         border-color: var(--primary);
-        background: rgba(99, 102, 241, 0.05);
+        box-shadow: 0 0 0 4px var(--primary-glow);
       }
 
-      .actions {
+      .button-group {
         display: flex;
-        gap: 10px;
+        gap: 12px;
+        margin-top: 20px;
       }
-      button {
+      .btn {
         flex: 1;
-        padding: 15px;
+        padding: 16px;
         border-radius: 14px;
         border: none;
-        font-weight: 700;
+        font-weight: 600;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
         transition: 0.3s;
-        font-family: inherit;
       }
-
-      .btn-add {
+      .btn-primary {
         background: var(--primary);
         color: white;
       }
-      .btn-add:hover {
-        background: var(--primary-hover);
-        transform: translateY(-2px);
-      }
-
-      .btn-print {
+      .btn-outline {
         background: transparent;
-        border: 1px solid var(--primary);
-        color: var(--primary-light);
-      }
-      .btn-print:hover {
-        background: rgba(99, 102, 241, 0.1);
+        border: 1px solid var(--border);
+        color: white;
       }
 
-      /* AREA STRUK */
-      .struk-container {
-        height: 100%;
+      /* --- RIGHT PANEL --- */
+      .cart-panel {
+        flex: 0.7;
+        background: rgba(15, 23, 42, 0.3);
+        padding: 40px;
         display: flex;
         flex-direction: column;
       }
-
-      .struk-header {
-        text-align: center;
-        margin-bottom: 20px;
-      }
-      .struk-body {
+      .cart-list {
         flex-grow: 1;
         overflow-y: auto;
-        padding: 10px;
+        margin: 20px 0;
       }
-
-      #isi-struk p {
+      .cart-item {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 14px;
+        border-radius: 16px;
+        margin-bottom: 12px;
+        border: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
-        font-size: 14px;
-        background: var(--glass);
-        padding: 10px;
-        border-radius: 10px;
-        margin-bottom: 8px;
       }
 
-      .struk-footer {
+      .summary-box {
         border-top: 1px dashed var(--border);
-        padding-top: 20px;
-        margin-top: 10px;
+        padding-top: 24px;
       }
-
-      .total-row {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 20px;
+      .total-amount {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--accent);
+        display: block;
+        margin: 4px 0 20px 0;
       }
-      .total-row strong {
-        font-size: 22px;
-        color: var(--success);
-      }
-
-      .btn-reset {
-        background: var(--danger);
-        color: white;
+      .btn-checkout {
         width: 100%;
+        background: var(--accent);
+        color: white;
+        padding: 18px;
+        border-radius: 16px;
+        font-weight: 700;
+        font-size: 16px;
       }
-
-      .footer-credit {
+      .developer-tag {
         margin-top: 20px;
-        font-size: 11px;
-        color: var(--text-muted);
         text-align: center;
+        font-size: 11px;
+        color: var(--text-dim);
       }
 
-      /* Custom Scrollbar */
       ::-webkit-scrollbar {
         width: 5px;
       }
@@ -257,78 +261,85 @@
     </style>
   </head>
   <body>
-    <div class="dashboard">
-      <div class="panel-left">
-        <h2>Premium POS System</h2>
-        <p class="subtitle">
-          Halo, Adam Anugrah &bull; Siap melayani pelanggan
-        </p>
+    <div class="app-container">
+      <div class="main-panel">
+        <header>
+          <h1>Adam's Mart</h1>
+          <div class="badge-user">
+            <i data-lucide="user" size="16"></i>
+            <span>Adam Anugrah • Full Stack Developer</span>
+          </div>
+        </header>
 
-        <div class="katalog-grid">
-          <strong>📦 Katalog Produk Tersedia</strong>
-          <ul id="daftar-produk"></ul>
+        <div class="section-label">
+          <i data-lucide="package" size="14"></i> Katalog Produk
         </div>
 
+        <div class="product-grid" id="daftar-produk"></div>
+
         <div class="input-section">
-          <div class="form-row">
-            <div class="input-group">
-              <label>KODE PRODUK</label>
-              <input type="text" id="kode" placeholder="P001..." />
+          <div class="input-wrapper">
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label class="section-label" style="margin: 0">Kode Produk</label>
+              <input
+                type="text"
+                id="kode"
+                class="input-field"
+                placeholder="P001..."
+              />
             </div>
-            <div class="input-group" style="flex: 0.5">
-              <label>QTY</label>
-              <input type="number" id="qty" value="1" />
+            <div style="display: flex; flex-direction: column; gap: 8px">
+              <label class="section-label" style="margin: 0">Qty</label>
+              <input
+                type="number"
+                id="qty"
+                class="input-field"
+                value="1"
+                min="1"
+              />
             </div>
           </div>
-          <div class="actions">
-            <button class="btn-add" onclick="tambahItem()">
-              + Tambah Item
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="tambahItem()">
+              <i data-lucide="plus-circle" size="18"></i> Tambah Item
             </button>
-            <button class="btn-print" onclick="tampilkanStruk()">
-              Pratinjau Struk
+            <button class="btn btn-outline" onclick="resetInput()">
+              <i data-lucide="refresh-cw" size="18"></i> Reset
             </button>
           </div>
         </div>
       </div>
 
-      <div class="panel-right">
-        <div class="struk-container">
-          <div class="struk-header">
-            <span style="font-size: 12px; color: var(--text-muted)"
-              >RINGKASAN BELANJA</span
-            >
+      <div class="cart-panel">
+        <div class="section-label">
+          <i data-lucide="shopping-cart" size="14"></i> Ringkasan Belanja
+        </div>
+        <div class="cart-list" id="isi-struk">
+          <div
+            style="text-align: center; color: var(--text-dim); margin-top: 50px"
+          >
+            <i
+              data-lucide="archive"
+              size="48"
+              style="opacity: 0.2; margin-bottom: 10px"
+            ></i>
+            <p>Belum ada item</p>
           </div>
-
-          <div class="struk-body" id="struk-output">
-            <div id="isi-struk">
-              <p
-                style="
-                  color: var(--text-muted);
-                  justify-content: center;
-                  border: none;
-                "
-              >
-                Belum ada item ditambahkan
-              </p>
-            </div>
-          </div>
-
-          <div class="struk-footer">
-            <div class="total-row">
-              <span>Total Keseluruhan</span>
-              <strong id="total-bayar">Rp 0</strong>
-            </div>
-            <button class="btn-reset" onclick="resetKasir()">
-              Selesaikan Transaksi
-            </button>
-            <div class="footer-credit">
-              Developed by Adam Anugrah &bull; Full Stack Developer
-            </div>
-          </div>
+        </div>
+        <div class="summary-box">
+          <span class="total-label">Total Pembayaran</span>
+          <span class="total-amount" id="total-bayar">Rp 0</span>
+          <button class="btn btn-checkout" onclick="selesaikanTransaksi()">
+            Selesaikan Transaksi
+          </button>
+          <div class="developer-tag">Powered by Adam Developer © 2026</div>
         </div>
       </div>
     </div>
 
     <script src="index.js"></script>
+    <script>
+      lucide.createIcons();
+    </script>
   </body>
 </html>
