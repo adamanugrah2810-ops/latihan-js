@@ -1,7 +1,9 @@
 /**
- * Aplikasi Kasir Modern - Premium POS
+ * NexGen POS Engine v4.0
  * Developed by Adam Anugrah
  */
+
+// --- 1. MODEL DATA (OOP) ---
 
 class Produk {
   constructor(kode, nama, harga) {
@@ -13,12 +15,12 @@ class Produk {
   // Merender tampilan kartu mewah di katalog
   renderCard() {
     return `
-      <div class="product-card" onclick="isiKodeOtomatis('${this.kode}')">
-        <span class="p-code">${this.kode}</span>
-        <span class="p-name">${this.nama}</span>
-        <span class="p-price">Rp ${this.harga.toLocaleString("id-ID")}</span>
-      </div>
-    `;
+            <div class="product-card" onclick="isiKodeOtomatis('${this.kode}')">
+                <span class="p-code">${this.kode}</span>
+                <span class="p-name">${this.nama}</span>
+                <span class="p-price">Rp ${this.harga.toLocaleString("id-ID")}</span>
+            </div>
+        `;
   }
 }
 
@@ -50,7 +52,6 @@ class Kasir {
     this.keranjang = [];
   }
 
-  // Menampilkan katalog dalam bentuk GRID CARDS
   tampilProduk() {
     const listEl = document.getElementById("daftar-produk");
     if (listEl) {
@@ -67,9 +68,15 @@ class Kasir {
       return false;
     }
 
-    this.keranjang.push(
-      new Transaksi(produk.kode, produk.nama, produk.harga, qty),
-    );
+    // Cari apakah produk sudah ada di keranjang
+    const existingItem = this.keranjang.find((item) => item.kode === inputKode);
+    if (existingItem) {
+      existingItem.qty += qty; // Tambahkan jumlah jika sudah ada
+    } else {
+      this.keranjang.push(
+        new Transaksi(produk.kode, produk.nama, produk.harga, qty),
+      );
+    }
     return true;
   }
 
@@ -78,17 +85,55 @@ class Kasir {
   }
 }
 
-// Inisialisasi Objek Kasir
-const kasir = new Kasir();
-kasir.tampilProduk();
+// --- 2. INISIALISASI OBJEK ---
 
-// Fungsi bantuan untuk klik kartu produk
+const kasir = new Kasir();
+
+// --- 3. LOGIKA AUTH (LOGIN/LOGOUT) ---
+
+const USER_DATA = {
+  username: "adam",
+  password: "123",
+};
+
+function handleLogin() {
+  const userIn = document.getElementById("username").value;
+  const passIn = document.getElementById("password").value;
+  const errorMsg = document.getElementById("login-error");
+
+  if (userIn === USER_DATA.username && passIn === USER_DATA.password) {
+    localStorage.setItem("isLoggedIn", "true");
+    showApp();
+  } else {
+    errorMsg.style.display = "block";
+    // Efek getar pada login card jika salah
+    const card = document.querySelector(".login-card");
+    card.classList.remove("animate-shake");
+    void card.offsetWidth; // Trigger reflow
+    card.classList.add("animate-shake");
+  }
+}
+
+function showApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("main-app").style.display = "flex";
+  kasir.tampilProduk();
+  updateTampilanStruk();
+  if (window.lucide) lucide.createIcons();
+}
+
+function handleLogout() {
+  localStorage.removeItem("isLoggedIn");
+  location.reload();
+}
+
+// --- 4. LOGIKA TRANSAKSI ---
+
 function isiKodeOtomatis(kode) {
   document.getElementById("kode").value = kode;
   document.getElementById("qty").focus();
 }
 
-// Tombol: TAMBAH ITEM
 function tambahItem() {
   const kodeInput = document.getElementById("kode");
   const qtyInput = document.getElementById("qty");
@@ -108,44 +153,45 @@ function tambahItem() {
   }
 }
 
-// Tombol: RESET (Hanya input)
 function resetInput() {
   document.getElementById("kode").value = "";
   document.getElementById("qty").value = "1";
 }
 
-// Update Panel Kanan (Ringkasan Belanja)
 function updateTampilanStruk() {
   const isiStruk = document.getElementById("isi-struk");
   const totalBayar = document.getElementById("total-bayar");
 
   if (kasir.keranjang.length === 0) {
     isiStruk.innerHTML = `
-      <div style="text-align: center; color: var(--text-dim); margin-top: 50px">
-        <i data-lucide="archive" size="48" style="opacity: 0.2; margin-bottom: 10px"></i>
-        <p>Belum ada item ditambahkan</p>
-      </div>
-    `;
+            <div style="text-align: center; color: var(--text-dim); margin-top: 50px">
+                <i data-lucide="archive" size="48" style="opacity: 0.2; margin-bottom: 10px"></i>
+                <p>Belum ada transaksi</p>
+            </div>
+        `;
     totalBayar.innerText = "Rp 0";
-    if (window.lucide) lucide.createIcons();
-    return;
+  } else {
+    isiStruk.innerHTML = kasir.keranjang
+      .map(
+        (item) => `
+                <div class="cart-item">
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 600; color: white;">${item.nama}</span>
+                        <small style="color: var(--text-dim); font-size: 11px;">${item.qty} x Rp ${item.harga.toLocaleString("id-ID")}</small>
+                    </div>
+                    <strong style="color: var(--accent);">Rp ${item.total().toLocaleString("id-ID")}</strong>
+                </div>
+            `,
+      )
+      .join("");
+
+    totalBayar.innerText = `Rp ${kasir.hitungTotal().toLocaleString("id-ID")}`;
   }
 
-  isiStruk.innerHTML = kasir.keranjang
-    .map(
-      (item) => `
-      <div class="cart-item">
-        <span>${item.nama} <small>(x${item.qty})</small></span>
-        <strong>Rp ${item.total().toLocaleString("id-ID")}</strong>
-      </div>
-    `,
-    )
-    .join("");
-
-  totalBayar.innerText = `Rp ${kasir.hitungTotal().toLocaleString("id-ID")}`;
+  // Refresh ikon lucide setiap kali render HTML baru
+  if (window.lucide) lucide.createIcons();
 }
 
-// Tombol: SELESAIKAN TRANSAKSI
 function selesaikanTransaksi() {
   if (kasir.keranjang.length === 0) {
     alert("Keranjang masih kosong!");
@@ -153,13 +199,23 @@ function selesaikanTransaksi() {
   }
 
   const totalAkhir = kasir.hitungTotal().toLocaleString("id-ID");
-  if (confirm(`Total Belanja: Rp ${totalAkhir}\nSelesaikan transaksi?`)) {
-    alert(`✅ Berhasil! Total Rp ${totalAkhir} dicatat.`);
+  if (
+    confirm(`Konfirmasi Transaksi\nTotal Belanja: Rp ${totalAkhir}\nLanjutkan?`)
+  ) {
+    alert(
+      `✅ Sukses! Transaksi sebesar Rp ${totalAkhir} telah dicatat ke sistem.`,
+    );
     kasir.keranjang = [];
     updateTampilanStruk();
     resetInput();
   }
 }
 
-// Sinkronisasi dengan tombol di HTML (jika Anda menggunakan nama fungsi resetKasir di HTML)
-const resetKasir = selesaikanTransaksi;
+// --- 5. EVENT LISTENER AWAL ---
+
+document.addEventListener("DOMContentLoaded", () => {
+  const isLogged = localStorage.getItem("isLoggedIn");
+  if (isLogged === "true") {
+    showApp();
+  }
+});

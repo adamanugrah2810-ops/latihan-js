@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>NexGen POS — Adam Anugrah</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
       :root {
         --primary: #6366f1;
@@ -36,6 +37,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        overflow: hidden;
         background-image:
           radial-gradient(
             at 0% 0%,
@@ -49,8 +51,43 @@
           );
       }
 
-      .app-container {
+      /* --- LOGIN SCREEN STYLES --- */
+      .login-wrapper {
+        position: fixed;
+        inset: 0;
         display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        background: var(--bg);
+      }
+
+      .login-card {
+        background: var(--card);
+        backdrop-filter: blur(40px);
+        border: 1px solid var(--border);
+        padding: 50px;
+        border-radius: 32px;
+        width: 100%;
+        max-width: 400px;
+        box-shadow: 0 50px 100px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* --- APP CONTAINER STYLES --- */
+      .app-container {
+        display: none; /* Akan diubah ke 'flex' via JS */
         width: 95%;
         max-width: 1200px;
         height: 90vh;
@@ -62,7 +99,6 @@
         overflow: hidden;
       }
 
-      /* --- LEFT PANEL --- */
       .main-panel {
         flex: 1.3;
         padding: 40px;
@@ -73,7 +109,7 @@
 
       header h1 {
         font-size: 28px;
-        background: linear-gradient(to right, #fff, #94a3b8);
+        background: linear-gradient(to right, #fff, var(--primary));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         margin-bottom: 6px;
@@ -102,70 +138,60 @@
         gap: 8px;
       }
 
-      /* --- KATALOG GRID MEWAH --- */
       .product-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 16px;
         overflow-y: auto;
-        padding-right: 10px;
         flex-grow: 1;
+        margin-bottom: 20px;
+        padding-right: 5px;
       }
 
+      /* Card Style untuk Katalog */
       .product-card {
         background: rgba(255, 255, 255, 0.03);
         border: 1px solid var(--border);
         border-radius: 20px;
         padding: 20px;
-        transition: all 0.3s ease;
+        transition: 0.3s;
         cursor: pointer;
-        position: relative;
       }
-
       .product-card:hover {
-        transform: translateY(-5px);
         background: rgba(255, 255, 255, 0.08);
         border-color: var(--primary);
-        box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.5);
+        transform: translateY(-5px);
       }
 
       .p-code {
         font-size: 10px;
         font-weight: 700;
         color: var(--primary);
-        letter-spacing: 1px;
-        margin-bottom: 8px;
         display: block;
+        margin-bottom: 4px;
       }
       .p-name {
-        font-size: 15px;
         font-weight: 600;
         color: #fff;
-        margin-bottom: 12px;
         display: block;
+        margin-bottom: 8px;
       }
       .p-price {
-        font-size: 16px;
-        font-weight: 700;
         color: var(--accent);
+        font-weight: 700;
+        display: block;
       }
 
-      /* --- INPUT AREA --- */
-      .input-section {
-        margin-top: 30px;
-      }
-      .input-wrapper {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 16px;
-      }
+      /* Inputs */
       .input-field {
+        width: 100%;
         background: rgba(15, 23, 42, 0.6);
         border: 1px solid var(--border);
         padding: 14px 18px;
         border-radius: 14px;
         color: white;
         transition: 0.3s;
+        margin-bottom: 15px;
       }
       .input-field:focus {
         outline: none;
@@ -173,13 +199,8 @@
         box-shadow: 0 0 0 4px var(--primary-glow);
       }
 
-      .button-group {
-        display: flex;
-        gap: 12px;
-        margin-top: 20px;
-      }
+      /* Buttons */
       .btn {
-        flex: 1;
         padding: 16px;
         border-radius: 14px;
         border: none;
@@ -195,13 +216,22 @@
         background: var(--primary);
         color: white;
       }
+      .btn-primary:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+      }
       .btn-outline {
         background: transparent;
         border: 1px solid var(--border);
         color: white;
       }
+      .btn-danger {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+      }
 
-      /* --- RIGHT PANEL --- */
+      /* Right Panel */
       .cart-panel {
         flex: 0.7;
         background: rgba(15, 23, 42, 0.3);
@@ -209,19 +239,23 @@
         display: flex;
         flex-direction: column;
       }
+
       .cart-list {
         flex-grow: 1;
         overflow-y: auto;
         margin: 20px 0;
+        padding-right: 5px;
       }
+
       .cart-item {
         background: rgba(255, 255, 255, 0.03);
-        padding: 14px;
-        border-radius: 16px;
+        padding: 16px;
+        border-radius: 18px;
         margin-bottom: 12px;
         border: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
+        align-items: center;
       }
 
       .summary-box {
@@ -230,66 +264,152 @@
       }
       .total-amount {
         font-size: 32px;
-        font-weight: 700;
+        font-weight: 800;
         color: var(--accent);
+        margin: 8px 0 24px 0;
         display: block;
-        margin: 4px 0 20px 0;
       }
+
       .btn-checkout {
-        width: 100%;
         background: var(--accent);
         color: white;
-        padding: 18px;
-        border-radius: 16px;
-        font-weight: 700;
+        width: 100%;
         font-size: 16px;
-      }
-      .developer-tag {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 11px;
-        color: var(--text-dim);
       }
 
       ::-webkit-scrollbar {
-        width: 5px;
+        width: 4px;
       }
       ::-webkit-scrollbar-thumb {
         background: var(--border);
         border-radius: 10px;
       }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+      .animate-shake {
+        animation: shake 0.3s ease-in-out;
+      }
     </style>
   </head>
   <body>
-    <div class="app-container">
+    <div id="login-screen" class="login-wrapper">
+      <div class="login-card">
+        <header style="text-align: center; margin-bottom: 30px">
+          <h1
+            style="
+              background: linear-gradient(
+                to right,
+                var(--primary),
+                var(--accent)
+              );
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              font-weight: 800;
+              font-size: 32px;
+            "
+          >
+            Adam'sMart
+          </h1>
+          <p style="color: var(--text-dim); font-size: 14px; margin-top: 5px">
+            Sistem Kasir
+          </p>
+        </header>
+
+        <label class="section-label">Identitas Pengguna</label>
+        <input
+          type="text"
+          id="username"
+          class="input-field"
+          placeholder="Username (Contoh: adam)"
+          autocomplete="off"
+        />
+
+        <label class="section-label">Kata Sandi</label>
+        <input
+          type="password"
+          id="password"
+          class="input-field"
+          placeholder="••••••••"
+        />
+
+        <button
+          class="btn btn-primary"
+          onclick="handleLogin()"
+          style="width: 100%"
+        >
+          <i data-lucide="log-in" size="18"></i> Masuk Sistem
+        </button>
+
+        <p
+          id="login-error"
+          style="
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+          "
+        >
+          Username atau password salah!
+        </p>
+      </div>
+    </div>
+
+    <div id="main-app" class="app-container">
       <div class="main-panel">
-        <header>
-          <h1>Adam's Mart</h1>
-          <div class="badge-user">
-            <i data-lucide="user" size="16"></i>
-            <span>Adam Anugrah • Full Stack Developer</span>
+        <header
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+          "
+        >
+          <div>
+            <h1>Adam's Mart</h1>
+            <div class="badge-user">
+              <i data-lucide="user" size="14"></i>
+              <span>Adam Anugrah • Full Stack Developer</span>
+            </div>
           </div>
+          <button
+            class="btn btn-danger"
+            onclick="handleLogout()"
+            style="padding: 10px 20px; font-size: 12px"
+          >
+            <i data-lucide="log-out" size="14"></i> Keluar
+          </button>
         </header>
 
         <div class="section-label">
-          <i data-lucide="package" size="14"></i> Katalog Produk
+          <i data-lucide="package" size="14"></i> Katalog Produk Tersedia
         </div>
 
         <div class="product-grid" id="daftar-produk"></div>
 
         <div class="input-section">
-          <div class="input-wrapper">
-            <div style="display: flex; flex-direction: column; gap: 8px">
-              <label class="section-label" style="margin: 0">Kode Produk</label>
+          <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 16px">
+            <div>
+              <label class="section-label">Input Kode Produk</label>
               <input
                 type="text"
                 id="kode"
                 class="input-field"
-                placeholder="P001..."
+                placeholder="Masukkan Kode (P001...)"
               />
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px">
-              <label class="section-label" style="margin: 0">Qty</label>
+            <div>
+              <label class="section-label">Quantity</label>
               <input
                 type="number"
                 id="qty"
@@ -299,8 +419,12 @@
               />
             </div>
           </div>
-          <div class="button-group">
-            <button class="btn btn-primary" onclick="tambahItem()">
+          <div style="display: flex; gap: 12px">
+            <button
+              class="btn btn-primary"
+              onclick="tambahItem()"
+              style="flex: 2"
+            >
               <i data-lucide="plus-circle" size="18"></i> Tambah Item
             </button>
             <button class="btn btn-outline" onclick="resetInput()">
@@ -314,32 +438,47 @@
         <div class="section-label">
           <i data-lucide="shopping-cart" size="14"></i> Ringkasan Belanja
         </div>
+
         <div class="cart-list" id="isi-struk">
           <div
             style="text-align: center; color: var(--text-dim); margin-top: 50px"
           >
-            <i
-              data-lucide="archive"
-              size="48"
-              style="opacity: 0.2; margin-bottom: 10px"
-            ></i>
-            <p>Belum ada item</p>
+            <i data-lucide="archive" size="48" style="opacity: 0.2"></i>
+            <p>Belum ada transaksi</p>
           </div>
         </div>
+
         <div class="summary-box">
-          <span class="total-label">Total Pembayaran</span>
+          <span style="font-size: 12px; color: var(--text-dim)"
+            >Total Kewajiban Bayar</span
+          >
           <span class="total-amount" id="total-bayar">Rp 0</span>
+
           <button class="btn btn-checkout" onclick="selesaikanTransaksi()">
-            Selesaikan Transaksi
+            <i data-lucide="check-circle" size="18"></i> Selesaikan Transaksi
           </button>
-          <div class="developer-tag">Powered by Adam Developer © 2026</div>
+
+          <div
+            style="
+              text-align: center;
+              font-size: 10px;
+              color: var(--text-dim);
+              margin-top: 20px;
+            "
+          >
+            NexGen POS Engine © 2026 • South Tangerang, Banten
+          </div>
         </div>
       </div>
     </div>
 
     <script src="index.js"></script>
+
     <script>
-      lucide.createIcons();
+      // Inisialisasi awal untuk Icon
+      document.addEventListener("DOMContentLoaded", () => {
+        if (window.lucide) lucide.createIcons();
+      });
     </script>
   </body>
 </html>
